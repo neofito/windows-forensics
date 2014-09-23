@@ -1,0 +1,1 @@
+[ La Papelera de reciclaje en Windows Vista/7](http://neosysforensics.blogspot.com/2010/02/la-papelera-de-reciclaje-en-windows.html)
