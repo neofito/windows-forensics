@@ -1,7 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 """
-intrash.py (v0.3)
+intrash.py (v0.4)
 
 Created: 2010-02-17
 
@@ -32,7 +32,7 @@ def cmd_parseargs(argv):
         argv = sys.argv[1:]
 
     usage = "%prog [options] path"
-    version = """%prog v0.3
+    version = """%prog v0.4
     
 Copyright (c) 2010: Vte. J. Garcia Mayen <neofito@gmail.com>
 Copyright (c) 2010: Hilario J. Montoliu  <hmontoliu@gmail.com>
@@ -130,8 +130,9 @@ def analyze_file(mypath):
 
     myfhandle.close()
 
-    myfile = os.path.split(mypath)[1]
-    filedeleted = u'$R' + myfile[2:]
+    filedeleted = mypath.replace('$I', '$R')
+    if not os.path.isfile(filedeleted):
+        filedeleted = filedeleted + ' (NOT FOUND!)'
     filepath = filepth.replace("\x00", "")
     filesize = unpack('<q', filesze)[0]
     seconds = conv_time(filetlo, filethi)
@@ -155,10 +156,10 @@ def output_normal(mytrash, encoding):
         output += u"\n    %s\n\n" % user
         for trashfile in trashfiles:
             output += u"""
-        Trash file: %(filedeleted)s
-        Path: %(filepath)s
-        Size: %(filesize)s bytes
-        Deleted at: %(filedeltime)s\n\n""" % trashfile
+        Trash file : %(filedeleted)s
+        Source path: %(filepath)s
+        File size  : %(filesize)s bytes
+        Deleted at : %(filedeltime)s\n\n""" % trashfile
 
     print output.encode(encoding)
 
@@ -175,12 +176,19 @@ def output_csv(mytrash, encoding):
            lineterminator = '\n', quoting=csv.QUOTE_NONNUMERIC)
 
     header = [
+        "User SID",
+        "Trash file",
+        "Source path",
+        "File size",
+        "Deleted at"]
+    writer.writerow(header)
+
+    header = [
         "user",
         "filedeleted",
         "filepath",
         "filesize",
-        "filedeltime",]
-    writer.writerow(header)
+        "filedeltime"]
 
     for user, trashfiles in mytrash.items():
         for trashfile in trashfiles:
